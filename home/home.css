@@ -1,0 +1,28 @@
+nav{
+    height: 100px;
+    width: 100%;
+}
+.left-nav{
+    margin-left: 100px;
+    float: left;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    list-style-type: none;
+}
+.right-nav{
+    margin-right:100px;
+    float:right;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    list-style-type: none;
+}
+nav li{
+    margin-right:50px;
+    margin-left:50px;
+    text-decoration: none;
+}
+
+
+

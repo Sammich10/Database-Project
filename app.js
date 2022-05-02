@@ -2,12 +2,14 @@ const mysql = require('mysql2');
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
+const { response } = require('express');
+const { request } = require('http');
 
 const connection = mysql.createConnection({
 	host     : 'localhost',
 	user     : 'root',
 	password : '10272000',
-	database : 'database-project'
+	database : 'cs425project'
 });
 
 const app = express();
@@ -43,9 +45,8 @@ app.post('/auth', function(request, response) {
 				// Redirect to home page
 				response.redirect('/home');
 			} else {
-				response.send('Incorrect Username and/or Password!');
+				response.redirect('/registerpage')
 			}			
-			response.end();
 		});
 	} else {
 		response.send('Please enter Username and Password!');
@@ -56,14 +57,37 @@ app.post('/auth', function(request, response) {
 app.get('/home', function(request, response) {
 	// If the user is loggedin
 	if (request.session.loggedin) {
-		// Output username
-		//response.send('Welcome back, ' + request.session.username + '!');
-		response.sendFile(path.join(__dirname + '/home/home.html'));
+		return response.sendFile(path.join(__dirname + "/home/home.html"))
 	} else {
 		// Not logged in
 		response.send('Please login to view this page!');
 	}
 	response.end();
 });
+
+app.get('home/showproducts', function(request,response){
+	var sql = 'SELECT * FROM products';
+	connection.query(sql,function(err,data,fields){
+		if (err) throw err;
+		res.render('product-list',{title: 'product-list', userData: data})
+	})
+})
+
+app.get('/registerpage', function(req,res){
+	res.sendFile(__dirname + "/login/register.html")
+})
+
+app.post('/register', function(req,res){
+	let username = req.body.username;
+	let password = req.body.password;
+	let email = req.body.email
+	if (username && password && email){
+		connection.query('INSERT INTO accounts (username, password, email) VALUES (?,?,?)',[username,password,email]);
+		req.session.loggedin=true;
+		res.redirect('/home')
+
+	}else{res.send('Please enter username, password and e-mail address!')}
+})
+
 
 app.listen(3000);
