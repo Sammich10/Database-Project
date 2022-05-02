@@ -43,6 +43,7 @@ nav li{
     box-shadow: 2px 2px 2px;
     text-align: center;
     transition: ease .25s;
+    position: relative;
 }
 .product_card:hover{
     transition: ease 1s;
@@ -50,6 +51,15 @@ nav li{
 }
 .product_card img{
     height: 200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.product_card button{
+    margin-bottom: 0px;
+    position: absolute;
+    bottom:   1px;
+    left: 0;
+    width: 100%;
     margin-left: auto;
     margin-right: auto;
 }

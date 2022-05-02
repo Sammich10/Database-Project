@@ -4,13 +4,13 @@ USE `cs425project`;
 
 CREATE TABLE IF NOT EXISTS `accounts` (
   `customer_id` int NOT NULL AUTO_INCREMENT,
-  `username` varchar(50) NOT NULL,
+  `username` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `email` varchar(100) NOT NULL,
+  `email` varchar(255) NOT NULL,
   `phone` varchar(20),
   `contract_id` int,
-  address_line1 varchar(100),
-  address_line2 varchar(100),
+  address_line1 varchar(255),
+  address_line2 varchar(255),
   PRIMARY KEY (`customer_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
@@ -18,14 +18,16 @@ CREATE TABLE IF NOT EXISTS `accounts` (
 CREATE TABLE IF NOT EXISTS products(
 	product_id int not null AUTO_INCREMENT,
     price int not null,
-	product_type VARCHAR(100),
-    product_name VARCHAR(100),
+	product_type VARCHAR(255),
+    product_name VARCHAR(255),
+    manufacturer VARCHAR(255),
     product_description VARCHAR(1000),
     primary key(product_id)
 );
 
 CREATE TABLE IF NOT EXISTS orders (
 	order_id INTEGER NOT NULL AUTO_INCREMENT,
+    tracking_number INTEGER,
     order_date varchar(16),
     customer_id int not null,
     address_line1 varchar(100),
@@ -63,31 +65,63 @@ CREATE TABLE IF NOT EXISTS `payments` (
 );
 
 CREATE TABLE stores (
-    store_id VARCHAR(20),
+    store_id INT NOT NULL AUTO_INCREMENT,
     inventory INTEGER,
-    phone VARCHAR(12),
+    phone VARCHAR(255),
     PRIMARY KEY (store_id)
 );
 
-CREATE TABLE inventory(
-	store_id VARCHAR(20),
-    product_id VARCHAR(20),
-    quantity VARCHAR(20),
+CREATE TABLE warehouses(
+    warehouse_id INT NOT NULL AUTO_INCREMENT,
+    phone varchar(255),
+    addr_line1 varchar(255),
+    addr_line2 varchar(255),
+    primary key(warehouse_id)
+);
+
+CREATE TABLE storeinventory(
+	store_id INT NOT NULL,
+    product_id VARCHAR(255),
+    quantity VARCHAR(255),
     primary key(store_id),
     foreign key(store_id) references stores(store_id)
 );
 
+CREATE TABLE warehouseinventory(
+    warehouse_id INT NOT NULL,
+    product_id VARCHAR(255),
+    quantity INTEGER,
+    primary key(warehouse_id)
+);
+
 CREATE TABLE employees(
-    employee_id VARCHAR(20),
+    employee_id VARCHAR(255),
     salary INTEGER,
-    position VARCHAR(15),
-    store_id VARCHAR(20),
-    f_name VARCHAR(20),
-    l_name VARCHAR(20),
+    position VARCHAR(255),
+    store_id INT,
+    f_name VARCHAR(255),
+    l_name VARCHAR(255),
     PRIMARY KEY (employee_id),
     FOREIGN KEY (store_id) REFERENCES stores(store_id)
 );
 
+CREATE TABLE cart(
+	cart_id int not null auto_increment,
+    customer_id int,
+    primary key(cart_id),
+    foreign key (customer_id) references accounts(customer_id)
+);
+
+CREATE TABLE cart_items(
+	cart_id int not null,
+    product_id int not null,
+    quantity int not null,
+    primary key(cart_id),
+    foreign key(product_id) references products(product_id)
+);
 
 INSERT INTO `accounts` (`customer_id`, `username`, `password`, `email`) VALUES (1, 'test', 'test', 'test@test.com');
 INSERT INTO `accounts` (`username`, `password`, `email`) VALUES ('sam.michelsen','1027','sammymichelsen@gmail.com');
+
+INSERT INTO products (price, product_type, product_name, manufacturer) VALUES(300,'Entertainment','TV','Samsung'),(350,'Entertainment','4K TV','Sony'),(30,'Smart Home','Amazon Echo Dot','Amazon'),(1200,'Computers','Laptop','HP'),(150,'Computers','Monitor','Asus')
+,(180,'Productivity','Printer','HP'),(10,'Entertainment','HDMI Cable','Belkin');

@@ -61,7 +61,7 @@ app.get('/home', function(request, response) {
 		return response.sendFile(path.join(__dirname + "/home/home.html"))
 	} else {
 		// Not logged in
-		return response.send('Please login to view this page!');
+		return response.sendFile(path.join(__dirname + "/home/home.html"))
 	}
 	response.end();
 });
@@ -93,5 +93,8 @@ app.post('/register', function(req,res){
 	}else{return res.send('Please enter username, password and e-mail address!')}
 })
 
+app.post('/addToCart', function(request,response){
+	console.log(request.body)
+})
 
 app.listen(3000);
