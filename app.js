@@ -58,9 +58,11 @@ app.post('/auth', function(request, response) {
 app.get('/home', function(request, response) {
 	// If the user is loggedin
 	if (request.session.loggedin) {
+		request.session.cartID = request.session.username
 		return response.sendFile(path.join(__dirname + "/home/home.html"))
 	} else {
 		// Not logged in
+		request.session.cartID = request.sessionID
 		return response.sendFile(path.join(__dirname + "/home/home.html"))
 	}
 	response.end();
@@ -95,6 +97,10 @@ app.post('/register', function(req,res){
 
 app.post('/addToCart', function(request,response){
 	console.log(request.body)
+	if(request.session.loggedin){
+
+	}
+	connection.query
 })
 
 app.listen(3000);
