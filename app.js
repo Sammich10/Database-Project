@@ -5,6 +5,7 @@ const path = require('path');
 const { response } = require('express');
 const { request } = require('http');
 
+
 const connection = mysql.createConnection({
 	host     : 'localhost',
 	user     : 'root',
@@ -65,12 +66,17 @@ app.get('/home', function(request, response) {
 	response.end();
 });
 
-app.get('home/showproducts', function(request,response){
+app.get('/home/showproducts', function(request,response){
 	var sql = 'SELECT * FROM products';
-	connection.query(sql,function(err,data,fields){
+	response.sendFile(__dirname+"/home/home.html")
+	connection.query(sql,function(err,res){
 		if (err) throw err;
-		res.render('product-list',{title: 'product-list', userData: data})
+		response.send(res)
+		for(let i =0; i < res.length; i++){
+			console.log(res[i]['product_name'])
+		}
 	})
+	return
 })
 
 app.get('/registerpage', function(req,res){
