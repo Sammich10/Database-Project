@@ -4,7 +4,7 @@ USE `cs425project`;
 
 CREATE TABLE IF NOT EXISTS `accounts` (
   `customer_id` int NOT NULL AUTO_INCREMENT,
-  `username` varchar(255) NOT NULL,
+  `username` varchar(255) NOT NULL UNIQUE,
   `password` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `phone` varchar(20),
@@ -106,18 +106,20 @@ CREATE TABLE employees(
 );
 
 CREATE TABLE cart(
-	cart_id int not null auto_increment,
+	cart_id varchar(255) not null,
     customer_id int,
     primary key(cart_id),
     foreign key (customer_id) references accounts(customer_id)
 );
 
 CREATE TABLE cart_items(
-	cart_id int not null,
+	rowid int not null auto_increment,
+	cart_id varchar(255) not null,
     product_id int not null,
     quantity int not null,
-    primary key(cart_id),
-    foreign key(product_id) references products(product_id)
+    primary key(rowid),
+    foreign key(product_id) references products(product_id),
+    foreign key(cart_id) references cart(cart_id)
 );
 
 INSERT INTO `accounts` (`customer_id`, `username`, `password`, `email`) VALUES (1, 'test', 'test', 'test@test.com');

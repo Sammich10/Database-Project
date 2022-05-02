@@ -39,7 +39,7 @@ function renderProducts(data){
 
 function addItemToCart(data){
 	console.log(data+" added to cart!")
-	const callurl = site_url + "/addToCart"
+	const callurl = (site_url + "/addToCart").toString()
 	fetch(callurl,{
 		method:"POST",
 

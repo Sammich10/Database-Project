@@ -28,6 +28,7 @@ app.get('/', function(request, response) {
 	return response.sendFile(path.join(__dirname + '/login/login.html'));
 });
 
+//route to authenticate users
 app.post('/auth', function(request, response) {
 	// Capture the input fields
 	let username = request.body.username;
@@ -43,6 +44,7 @@ app.post('/auth', function(request, response) {
 				// Authenticate the user
 				request.session.loggedin = true;
 				request.session.username = username;
+				request.session.cartID = request.sessionID
 				// Redirect to home page
 				return response.redirect('/home');
 			} else {
@@ -55,6 +57,7 @@ app.post('/auth', function(request, response) {
 	}
 });
 
+//user login page
 app.get('/home', function(request, response) {
 	// If the user is loggedin
 	if (request.session.loggedin) {
@@ -68,6 +71,7 @@ app.get('/home', function(request, response) {
 	response.end();
 });
 
+//route to return the products in table 
 app.get('/getproducts', function(request,response){
 	var sql = 'SELECT * FROM products';
 	connection.query(sql,function(err,res){
@@ -79,6 +83,7 @@ app.get('/getproducts', function(request,response){
 	})
 })
 
+//send user to registration page
 app.get('/registerpage', function(req,res){
 	return res.sendFile(__dirname + "/login/register.html")
 })
@@ -95,12 +100,40 @@ app.post('/register', function(req,res){
 	}else{return res.send('Please enter username, password and e-mail address!')}
 })
 
+//route to add items to user's cart
 app.post('/addToCart', function(request,response){
-	console.log(request.body)
+	console.log(request.body['product_id'])
+	//if user logged in, make the card ID the username + the sessionID, elsewise make the cartID the sessionID
 	if(request.session.loggedin){
-
+		var cartID = request.session.username.toString() + request.sessionID.toString()
+	}else{
+		var cartID = request.sessionID.toString()
 	}
-	connection.query
+	var c = 0
+	var cust_id
+	var productID = request.body["product_id"]
+	if(request.session.username){
+		connection.query('SELECT customer_id FROM accounts WHERE username = ?',[request.session.username.toString()], function(err,res){
+			if(err) {throw err;}
+			if(res.length > 1){
+				cust_id = res[0]['customer_id']
+			}
+		})
+	}
+	//check to see if the cartID is already in the cart table, and if it is we will do nothing. If it isn't then we must create a new table entry
+	connection.query('SELECT cart_id FROM cart', function (err, res) {
+		if (err) { throw err; }
+		for (let i = 0; i < res.length; i++) {
+			if (res[i]['cart_id'] == cartID) {
+				c = c + 1;
+			}
+		}
+		if(c==0){
+			connection.query('INSERT INTO cart (cart_id, customer_id) VALUES(?,?)',[cartID,cust_id])
+		}
+		connection.query('INSERT INTO cart_items (cart_id, product_id, quantity) VALUES (?,?,?)',[cartID,productID,1])
+	})
+	return response.end()
 })
 
 app.listen(3000);
