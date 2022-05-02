@@ -25,7 +25,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname)));
 app.get('/', function(request, response) {
-	response.sendFile(path.join(__dirname + '/login/login.html'));
+	return response.sendFile(path.join(__dirname + '/login/login.html'));
 });
 
 app.post('/auth', function(request, response) {
@@ -44,13 +44,13 @@ app.post('/auth', function(request, response) {
 				request.session.loggedin = true;
 				request.session.username = username;
 				// Redirect to home page
-				response.redirect('/home');
+				return response.redirect('/home');
 			} else {
-				response.redirect('/registerpage')
+				return response.redirect('/registerpage')
 			}			
 		});
 	} else {
-		response.send('Please enter Username and Password!');
+		return response.send('Please enter Username and Password!');
 		response.end();
 	}
 });
@@ -61,26 +61,24 @@ app.get('/home', function(request, response) {
 		return response.sendFile(path.join(__dirname + "/home/home.html"))
 	} else {
 		// Not logged in
-		response.send('Please login to view this page!');
+		return response.send('Please login to view this page!');
 	}
 	response.end();
 });
 
-app.get('/home/showproducts', function(request,response){
+app.get('/getproducts', function(request,response){
 	var sql = 'SELECT * FROM products';
-	response.sendFile(__dirname+"/home/home.html")
 	connection.query(sql,function(err,res){
-		if (err) throw err;
-		response.send(res)
+		if (err) {throw err;}
 		for(let i =0; i < res.length; i++){
 			console.log(res[i]['product_name'])
 		}
+		return response.send(res)
 	})
-	return
 })
 
 app.get('/registerpage', function(req,res){
-	res.sendFile(__dirname + "/login/register.html")
+	return res.sendFile(__dirname + "/login/register.html")
 })
 
 app.post('/register', function(req,res){
@@ -90,9 +88,9 @@ app.post('/register', function(req,res){
 	if (username && password && email){
 		connection.query('INSERT INTO accounts (username, password, email) VALUES (?,?,?)',[username,password,email]);
 		req.session.loggedin=true;
-		res.redirect('/home')
+		return res.redirect('/home')
 
-	}else{res.send('Please enter username, password and e-mail address!')}
+	}else{return res.send('Please enter username, password and e-mail address!')}
 })
 
 

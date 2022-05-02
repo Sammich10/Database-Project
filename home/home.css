@@ -1,3 +1,6 @@
+*{
+    background-color: beige;
+}
 nav{
     height: 100px;
     width: 100%;
@@ -23,6 +26,31 @@ nav li{
     margin-left:50px;
     text-decoration: none;
 }
-
-
+.main-container h1{
+    text-align: center;
+}
+.products-container{
+    display: flex;
+    flex-wrap: wrap;
+}
+.product_card{
+    height: 300px;
+    width: 150px;
+    flex: 1 0 21%;
+    margin: 5px;
+    background: rgb(84,143,171);
+    background: linear-gradient(0deg, rgba(84,143,171,1) 0%, rgba(240,240,240,1) 100%);
+    box-shadow: 2px 2px 2px;
+    text-align: center;
+    transition: ease .25s;
+}
+.product_card:hover{
+    transition: ease 1s;
+    box-shadow: 4px 4px 4px;
+}
+.product_card img{
+    height: 200px;
+    margin-left: auto;
+    margin-right: auto;
+}
 
