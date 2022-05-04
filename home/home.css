@@ -1,5 +1,5 @@
 *{
-    background-color: beige;
+    background-color: #435165;
 }
 nav{
     height: 100px;
@@ -27,16 +27,35 @@ nav li{
     text-decoration: none;
 }
 .main-container h1{
+    position: relative;
     text-align: center;
 }
+.filters-container{
+    float: left;
+    width: 20%;
+    position: relative;
+    left: 2%;
+}
+.filters-container ul{
+    font-size: 16pt;
+    font-weight: bold;
+}
+.filters-container li{
+    font-size: 12pt;
+    font-weight: lighter;
+}
 .products-container{
+    float: right;
+    position: relative;
+    left: 0;
+    width: 75%;
     display: flex;
     flex-wrap: wrap;
 }
 .product_card{
-    height: 300px;
-    width: 150px;
-    flex: 1 0 21%;
+    height: 350px;
+    max-width: 300px;
+    flex: 1 0 300px;
     margin: 5px;
     background: rgb(84,143,171);
     background: linear-gradient(0deg, rgba(84,143,171,1) 0%, rgba(240,240,240,1) 100%);
@@ -44,6 +63,7 @@ nav li{
     text-align: center;
     transition: ease .25s;
     position: relative;
+    border-radius: 3px;
 }
 .product_card:hover{
     transition: ease 1s;
@@ -57,10 +77,22 @@ nav li{
 .product_card button{
     margin-bottom: 0px;
     position: absolute;
-    bottom:   1px;
+    bottom:0px;
     left: 0;
     width: 100%;
     margin-left: auto;
     margin-right: auto;
+    background-color:black;
+    color: white;
+    border: none;
+    padding: none;
+    margin: none;
+    height: 15%;
+    text-align: center;
+    border-radius: 0px 0px 2px 2px;
+}
+.product_card p{
+    background: rgb(84,143,171);
+    background: linear-gradient(0deg, rgba(84,143,171,1) 0%, rgba(240,240,240,1) 100%);
 }
 

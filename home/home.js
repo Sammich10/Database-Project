@@ -1,5 +1,11 @@
 
 const site_url = "http://localhost:3000"
+
+function init(){
+	fetchFilters()
+	fetchProducts()
+}
+
 async function fetchProducts(){
     fetch('http://localhost:3000/getproducts')
 	.then(response=>{
@@ -11,6 +17,19 @@ async function fetchProducts(){
 		json=>renderProducts(json))
 		.catch(err => console.error(`Fetch Problem: ${err.message}`));
 }
+
+async function fetchFilters(){
+    fetch('http://localhost:3000/getfilters')
+	.then(response=>{
+		if(!response.ok){
+			throw new Error(`HTTP Error: ${response.status}`)
+		}
+		return response.json()
+	}).then(
+		json=>renderFilters(json))
+		.catch(err => console.error(`Fetch Problem: ${err.message}`));
+}
+
 
 function renderProducts(data){
 	for(var i=0; i < data.length; i++){
@@ -35,6 +54,27 @@ function renderProducts(data){
 		newelement.appendChild(addToCart)
 		prod_container.appendChild(newelement);
 	}
+	return
+}
+
+function renderFilters(data){
+	console.log(data)
+	for(let i = 0; i < data.length; i++){
+		let prod_type_list = document.getElementById('product_type_list')
+		let man_list = document.getElementById('manufacturer_list')
+		if (data[i].product_type){
+			let newelement = document.createElement('li')
+			newelement.classList.add('product_type')
+			newelement.innerHTML = data[i].product_type
+			prod_type_list.appendChild(newelement)
+		}
+		if(data[i].manufacturer){
+			let newelement = document.createElement('li')
+			newelement.classList.add('manufacturer')
+			newelement.innerHTML = data[i].manufacturer
+			man_list.appendChild(newelement)
+		}
+	}
 }
 
 function addItemToCart(data){
@@ -49,7 +89,7 @@ function addItemToCart(data){
 		headers:{
 			"Content-type": "application/json; charset=UTF-8"
 		}
-	}).then(console.log("request made"))
+	}).then(console.log("item added to cart"))
 }
 
 

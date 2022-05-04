@@ -4,6 +4,7 @@ const session = require('express-session');
 const path = require('path');
 const { response } = require('express');
 const { request } = require('http');
+const e = require('express');
 
 
 const connection = mysql.createConnection({
@@ -71,9 +72,9 @@ app.get('/home', function(request, response) {
 	response.end();
 });
 
-//route to return the products in table 
+//route to return all the products in table 
 app.get('/getproducts', function(request,response){
-	var sql = 'SELECT * FROM products';
+	let sql = 'SELECT * FROM products';
 	connection.query(sql,function(err,res){
 		if (err) {throw err;}
 		for(let i =0; i < res.length; i++){
@@ -81,6 +82,25 @@ app.get('/getproducts', function(request,response){
 		}
 		return response.send(res)
 	})
+})
+
+app.get('/getfilters', function(request,response){
+	let sql ='SELECT DISTINCT product_type FROM products;'
+	let finalresult = []
+	connection.query(sql,function(err,results,fields){
+		if(err){throw err;}
+		console.log(results)
+		Array.prototype.push.apply(finalresult,results)
+	})
+	sql = 'SELECT DISTINCT manufacturer FROM products'
+	connection.query(sql,function(err,results){
+		if(err){throw err;}
+		console.log(results)
+		Array.prototype.push.apply(finalresult,results)
+		console.log(finalresult)
+		return response.send(finalresult)
+	})
+	
 })
 
 //send user to registration page
@@ -92,6 +112,7 @@ app.post('/register', function(req,res){
 	let username = req.body.username;
 	let password = req.body.password;
 	let email = req.body.email
+	//if the user provides all neccesary info, we make them an account and save their data in the database
 	if (username && password && email){
 		connection.query('INSERT INTO accounts (username, password, email) VALUES (?,?,?)',[username,password,email]);
 		req.session.loggedin=true;
@@ -131,9 +152,51 @@ app.post('/addToCart', function(request,response){
 		if(c==0){
 			connection.query('INSERT INTO cart (cart_id, customer_id) VALUES(?,?)',[cartID,cust_id])
 		}
-		connection.query('INSERT INTO cart_items (cart_id, product_id, quantity) VALUES (?,?,?)',[cartID,productID,1])
+		connection.query('SELECT * FROM cart_items',function(err,res){
+			if(res.length>0){
+				for(let i = 0; i < res.length; i++){
+					//if the product id and cart id match, update quantity
+					if(res[i]['cart_id'] == cartID && res[i]['product_id'] == productID){
+						//get current quantity and add 1
+						newQuantity = parseInt(res[i]['quantity']) + 1
+						connection.query('UPDATE cart_items SET quantity = ? WHERE product_id = ?',[newQuantity,productID])
+						return
+					}else if(i == (res.length - 1)){//otherwise add it into the cart_items table and set quantity to 1
+						connection.query('INSERT INTO cart_items (cart_id, product_id, quantity) VALUES (?,?,?)',[cartID,productID,1])
+						return
+					}
+				}
+			}
+			else{
+				connection.query('INSERT INTO cart_items (cart_id, product_id, quantity) VALUES (?,?,?)',[cartID,productID,1])
+			}
+		})
 	})
+	
 	return response.end()
+})
+
+app.get('/cart', function(request,response){
+	//sends the cart page file to user
+	response.sendFile(path.join(__dirname+'/purchase/cart.html'));
+})
+
+app.get('/getCart',function(request,response){
+	if(request.session.loggedin){
+		sql = "select product_id,price,product_name,quantity,manufacturer,product_description from cart natural join cart_items natural join products where cart_id = ?;"
+		cart_id = request.session.cartID
+		connection.query(sql,[cart_id],function(err,res){
+			if(err){throw err;}
+			return response.send(res)
+		})
+	}else{
+		sql = "select product_id,price,product_name,quantity,manufacturer,product_description from cart natural join cart_items natural join products where cart_id = ?;"
+		cart_id = request.session.cartID
+		connection.query(sql,[cart_id],function(err,res){
+			if(err){throw err;}
+			return response.send(res)
+		})
+	}
 })
 
 app.listen(3000);
