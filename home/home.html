@@ -25,29 +25,13 @@
     <div class="main-container">
         <h1>Hello, world!</h1>
         <div class="filters-container">
-            <ul class="product_type_list" id="product_type_list">Product Type</ul>
-            <ul class="manufacturer_list" id="manufacturer_list">Manufacturer</ul>
-
+        
             <form>
-                <label>
-                  <span>Bananas</span>
-                  <input type="checkbox" name="fruit[]" value="bananas">
-                </label>
-                
-                <label>
-                  <span>Apples</span>
-                  <input type="checkbox" name="fruit[]" value="apples">
-                </label>
-                
-                <label>
-                  <span>Grapes</span>
-                  <input type="checkbox" name="fruit[]" value="grapes">
-                </label>
+                <ul class="product_type_list" id="product_type_list">Product Type</ul>
+                <ul class="manufacturer_list" id="manufacturer_list">Manufacturer</ul>
                 
                 <button type="submit">Filter</button>
               </form>
-
-            <button onclick="fetchProducts()">Click</button>
         </div>
         <div class="products-container" id="products-container">
 

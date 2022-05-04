@@ -64,14 +64,24 @@ function renderFilters(data){
 		let man_list = document.getElementById('manufacturer_list')
 		if (data[i].product_type){
 			let newelement = document.createElement('li')
+			let checkbox = document.createElement('input')
+			checkbox.type="checkbox"
+			checkbox.name="product_type"
+			checkbox.value=data[i].product_type
 			newelement.classList.add('product_type')
 			newelement.innerHTML = data[i].product_type
+			newelement.appendChild(checkbox)
 			prod_type_list.appendChild(newelement)
 		}
 		if(data[i].manufacturer){
 			let newelement = document.createElement('li')
+			let checkbox = document.createElement('input')
+			checkbox.type="checkbox"
+			checkbox.name="manufacturer"
+			checkbox.value=data[i].manufacturer
 			newelement.classList.add('manufacturer')
 			newelement.innerHTML = data[i].manufacturer
+			newelement.appendChild(checkbox)
 			man_list.appendChild(newelement)
 		}
 	}
@@ -79,8 +89,8 @@ function renderFilters(data){
 
 function addItemToCart(data){
 	console.log(data+" added to cart!")
-	const callurl = (site_url + "/addToCart").toString()
-	fetch(callurl,{
+	const requrl = (site_url + "/addToCart").toString()
+	fetch(requrl,{
 		method:"POST",
 
 		body: JSON.stringify({

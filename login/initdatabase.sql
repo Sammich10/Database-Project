@@ -126,4 +126,4 @@ INSERT INTO `accounts` (`customer_id`, `username`, `password`, `email`) VALUES (
 INSERT INTO `accounts` (`username`, `password`, `email`) VALUES ('sam.michelsen','1027','sammymichelsen@gmail.com');
 
 INSERT INTO products (price, product_type, product_name, manufacturer) VALUES(300,'Entertainment','TV','Samsung'),(350,'Entertainment','4K TV','Sony'),(30,'Smart Home','Amazon Echo Dot','Amazon'),(1200,'Computers','Laptop','HP'),(150,'Computers','Monitor','Asus')
-,(180,'Productivity','Printer','HP'),(10,'Entertainment','HDMI Cable','Belkin');
+,(180,'Productivity','Printer','HP'),(10,'Entertainment','HDMI Cable','Belkin'),(30,'Video Games','Fortnite V-Buck Gift Card','Epic Games');
