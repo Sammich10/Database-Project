@@ -32,6 +32,10 @@ async function fetchFilters(){
 
 
 function renderProducts(data){
+	document.querySelectorAll('.product_card').forEach(function(e){
+		e.remove()
+		console.log('removed an item')
+	})
 	for(var i=0; i < data.length; i++){
 		const prod_container =document.getElementById("products-container")
 		var newelement = document.createElement("div");
@@ -102,4 +106,44 @@ function addItemToCart(data){
 	}).then(console.log("item added to cart"))
 }
 
+function filter(){
+	let type_list = ['product_type',]
+	let manuf_list = ['manufacturer',]
+	let typeCheckBoxes = document.getElementsByName('product_type')
+	let manufacturerCheckBoxes = document.getElementsByName('manufacturer')
+	for(let i = 0; i < typeCheckBoxes.length; i++){
+		if(typeCheckBoxes[i].checked){
+			type_list.push(typeCheckBoxes[i].value)
+		}
+	}
+	for(let i = 0; i < manufacturerCheckBoxes.length; i++){
+		if(manufacturerCheckBoxes[i].checked){
+			manuf_list.push(manufacturerCheckBoxes[i].value)
+		}
+	}
+	var filters = []
+	filters.push(type_list)
+	filters.push(manuf_list)
+	console.log(filters)
+	getFilterdProducts(filters)
+};
+
+async function getFilterdProducts(filters){
+
+	const response = await fetch(site_url+"/getFilteredProducts",{
+		method:'POST',
+		headers:{
+			"Content-type": "application/json; charset=UTF-8"
+		},
+		body: JSON.stringify(filters)
+	}).then(response=>{
+		if(!response.ok){
+			throw new Error(`HTTP Error: ${response.status}`)
+		}
+		return response.json()
+	}).then(
+		json=>renderProducts(json))
+		.catch(err => console.error(`Fetch Problem: ${err.message}`))
+
+}
 

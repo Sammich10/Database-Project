@@ -199,4 +199,35 @@ app.get('/getCart',function(request,response){
 	}
 })
 
+app.post('/getFilteredProducts',function(request,response){
+	//body contains filters in order: manufacturer, product_type
+	console.log(request.body)
+	let proceed = false
+	sql = "select * from products"
+	for(let i = 0; i<request.body.length; i++){
+		if(request.body[i].length > 1){
+			proceed = true
+		}
+	}
+	if(proceed){
+		sql = sql + " WHERE "
+		console.log('at least 1 filter')
+		for(let i = 0; i<request.body.length; i++){
+			if(request.body[i].length > 1){
+				if(i > 0 && sql.length > 35){sql = sql + " or "}
+				sql = sql + request.body[i][0] + " in " + "('" + request.body[i].slice(1,request.body[i].length).join("','") + "')"
+			}
+		}
+	}
+	console.log(sql)
+	
+	connection.query(sql, function(err,res){
+		if(err){throw err}
+		console.log(res)
+		return response.send(res)
+	})
+	
+})
+
+
 app.listen(3000);
