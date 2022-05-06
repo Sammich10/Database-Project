@@ -14,6 +14,11 @@ CREATE TABLE IF NOT EXISTS `accounts` (
   PRIMARY KEY (`customer_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS tempcust(
+    email varchar(255) PRIMARY KEY,
+    customer_id_temp int unique auto_increment
+);
+
 
 CREATE TABLE IF NOT EXISTS products(
 	product_id int not null AUTO_INCREMENT,
@@ -30,8 +35,10 @@ CREATE TABLE IF NOT EXISTS orders (
     tracking_number INTEGER,
     order_date varchar(16),
     customer_id int not null,
-    address_line1 varchar(100),
-    address_line2 varchar(100),
+    address varchar(255) not null,
+    city varchar(255) not null,
+    state varchar(255) not null,
+    zipcode int not null,
     total INTEGER,
     status varchar(20),
     PRIMARY KEY (order_id),
@@ -55,13 +62,15 @@ CREATE TABLE IF NOT EXISTS `contracts` (
     foreign key(`order_id`) references orders(`order_id`)
 );
 
-CREATE TABLE IF NOT EXISTS `payments` (
-	`customer_id` int NOT NULL,
-	`card_number` int NOT NULL,
-    `expr_month` varchar(6) NOT NULL,
-    `sec_code`	int NOT NULL,
-    PRIMARY KEY(`customer_id`),
-    FOREIGN KEY(`customer_id`) REFERENCES accounts(`customer_id`)
+CREATE TABLE IF NOT EXISTS payments (
+	customer_id int NOT NULL,
+    nameoncard varchar(255) not null,
+	card_number int NOT NULL,
+    expr_month varchar(6) NOT NULL,
+    expr_year varchar(6) not null,
+    cvv	int NOT NULL,
+    PRIMARY KEY(customer_id),
+    FOREIGN KEY(customer_id) REFERENCES accounts(customer_id)
 );
 
 CREATE TABLE stores (
@@ -76,6 +85,10 @@ CREATE TABLE warehouses(
     phone varchar(255),
     addr_line1 varchar(255),
     addr_line2 varchar(255),
+    address varchar(255),
+    city varchar(255),
+    state varchar(255),
+    zip integer,
     primary key(warehouse_id)
 );
 
@@ -126,4 +139,4 @@ INSERT INTO `accounts` (`customer_id`, `username`, `password`, `email`) VALUES (
 INSERT INTO `accounts` (`username`, `password`, `email`) VALUES ('sam.michelsen','1027','sammymichelsen@gmail.com');
 
 INSERT INTO products (price, product_type, product_name, manufacturer) VALUES(300,'Entertainment','TV','Samsung'),(350,'Entertainment','4K TV','Sony'),(30,'Smart Home','Amazon Echo Dot','Amazon'),(1200,'Computers','Laptop','HP'),(150,'Computers','Monitor','Asus')
-,(180,'Productivity','Printer','HP'),(10,'Entertainment','HDMI Cable','Belkin'),(30,'Video Games','Fortnite V-Buck Gift Card','Epic Games');
+,(180,'Productivity','Printer','HP'),(10,'Entertainment','HDMI Cable','Belkin');

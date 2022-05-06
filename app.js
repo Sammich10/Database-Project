@@ -62,7 +62,7 @@ app.post('/auth', function(request, response) {
 app.get('/home', function(request, response) {
 	// If the user is loggedin
 	if (request.session.loggedin) {
-		request.session.cartID = request.session.username
+		request.session.cartID = request.session.username.toString() + request.sessionID.toString()
 		return response.sendFile(path.join(__dirname + "/home/home.html"))
 	} else {
 		// Not logged in
@@ -77,9 +77,6 @@ app.get('/getproducts', function(request,response){
 	let sql = 'SELECT * FROM products';
 	connection.query(sql,function(err,res){
 		if (err) {throw err;}
-		for(let i =0; i < res.length; i++){
-			console.log(res[i]['product_name'])
-		}
 		return response.send(res)
 	})
 })
@@ -89,15 +86,12 @@ app.get('/getfilters', function(request,response){
 	let finalresult = []
 	connection.query(sql,function(err,results,fields){
 		if(err){throw err;}
-		console.log(results)
 		Array.prototype.push.apply(finalresult,results)
 	})
 	sql = 'SELECT DISTINCT manufacturer FROM products'
 	connection.query(sql,function(err,results){
 		if(err){throw err;}
-		console.log(results)
 		Array.prototype.push.apply(finalresult,results)
-		console.log(finalresult)
 		return response.send(finalresult)
 	})
 	
@@ -123,7 +117,7 @@ app.post('/register', function(req,res){
 
 //route to add items to user's cart
 app.post('/addToCart', function(request,response){
-	console.log(request.body['product_id'])
+	
 	//if user logged in, make the card ID the username + the sessionID, elsewise make the cartID the sessionID
 	if(request.session.loggedin){
 		var cartID = request.session.username.toString() + request.sessionID.toString()
@@ -201,7 +195,7 @@ app.get('/getCart',function(request,response){
 
 app.post('/getFilteredProducts',function(request,response){
 	//body contains filters in order: manufacturer, product_type
-	console.log(request.body)
+	
 	let proceed = false
 	sql = "select * from products"
 	for(let i = 0; i<request.body.length; i++){
@@ -211,7 +205,7 @@ app.post('/getFilteredProducts',function(request,response){
 	}
 	if(proceed){
 		sql = sql + " WHERE "
-		console.log('at least 1 filter')
+		
 		for(let i = 0; i<request.body.length; i++){
 			if(request.body[i].length > 1){
 				if(i > 0 && sql.length > 35){sql = sql + " or "}
@@ -219,15 +213,64 @@ app.post('/getFilteredProducts',function(request,response){
 			}
 		}
 	}
-	console.log(sql)
+	
 	
 	connection.query(sql, function(err,res){
 		if(err){throw err}
-		console.log(res)
 		return response.send(res)
 	})
 	
 })
+
+app.post('/createOrder',function(request,response){
+	console.log(request.body)
+	var customer_id
+	if(!request.session.loggedin){
+		connection.query('INSERT INTO tempcust (email) VALUES (?)',[request.body['email']])
+		connection.query('SELECT customer_id_temp FROM tempcust WHERE email = ?',[request.body['email']],function(err,res){
+			if(err) throw err;
+			customer_id = res[0]['customer_id_temp']
+			console.log(customer_id)
+			createOrder();
+		})
+	}else{
+		connection.query('SELECT customer_id FROM accounts WHERE username = ?',[request.session.username],function(err,res){
+			if(err) throw err;
+			customer_id = res[0]['customer_id']
+			console.log(customer_id)
+			createOrder();
+		})
+	}
+
+	function createOrder(){
+		tracking_number = 'sampletrackingnumber'
+		let date = new Date();
+		let currentdate = date.toDateString();
+		//check to see if cust_id is in payment table, if it is simply update payment info, if not then insert it 
+		connection.query('SELECT nameoncard FROM payments WHERE customer_id = ?',[customer_id],function(err,res){
+			if(err) throw err;
+			if(res[0]){
+				let sql = 'UPDATE payments SET nameoncard = ?, card_number = ?, expr_month = ?, expr_year = ?, cvv = ? WHERE customer_id = ?'
+				connection.query(sql,[request.body['nameOnCard'],request.body['cardNumber'],request.body['expMonth'],request.body['expYear'],request.body['cvv'],customer_id])
+
+			}else{
+				let sql='INSERT INTO payments (customer_id, nameoncard, card_number, expr_month, expr_year, cvv) values(?,?,?,?,?,?)'
+				connection.query(sql,[customer_id,request.body['nameOnCard'],request.body['cardNumber'],request.body['expMonth'],request.body['expYear'],request.body['cvv']])
+			}
+		})
+		let sql1 = 'INSERT INTO orders (tracking_number, order_date, customer_id, address, city, state, zipcode, status) VALUES (?,?,?,?,?,?,?,?)'
+
+		connection.query(sql1,[tracking_number,currentdate,customer_id, request.body['address'],request.body['city'],request.body['state'],request.body['zipcode'],'placed'])
+
+
+		let sql2='SELECT product_id,quantity FROM cart_items WHERE cart_id = ?'
+		connection.query(sql2,[request.session.cartID],function(err,res){
+			if(err) throw err;
+			console.log(res);
+		})
+	}
+})
+
 
 
 app.listen(3000);
