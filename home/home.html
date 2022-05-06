@@ -29,6 +29,13 @@
             <form>
                 <ul class="product_type_list" id="product_type_list">Product Type</ul>
                 <ul class="manufacturer_list" id="manufacturer_list">Manufacturer</ul>
+                <div class="pricefilter">
+                    <label for="price1">from</label>
+                    <input  class = 'price-filter' type="text" name="price1" id = "price1" placeholder="Min">
+                    <br>
+                    <label for="price2">to</label>
+                    <input class = 'price-filter' type="text" name="price2" id = "price2" placeholder="Max">
+                </div>
                 
                 <button type="button" onclick="filter()" >Filter</button>
               </form>

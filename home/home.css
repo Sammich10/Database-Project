@@ -127,5 +127,11 @@ nav li{
 .product_card p{
     background: rgb(151, 191, 226);
 }
-
+.price-filter{
+    margin-left:30px;
+    width: 40px;
+}
+.pricefilter{
+    margin-bottom:50px;
+}
 

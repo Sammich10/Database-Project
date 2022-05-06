@@ -110,6 +110,7 @@ app.post('/register', function(req,res){
 	if (username && password && email){
 		connection.query('INSERT INTO accounts (username, password, email) VALUES (?,?,?)',[username,password,email]);
 		req.session.loggedin=true;
+		req.session.username = username
 		return res.redirect('/home')
 
 	}else{return res.send('Please enter username, password and e-mail address!')}
@@ -198,7 +199,7 @@ app.post('/getFilteredProducts',function(request,response){
 	
 	let proceed = false
 	sql = "select * from products"
-	for(let i = 0; i<request.body.length; i++){
+	for(let i = 0; i<request.body.length-1; i++){
 		if(request.body[i].length > 1){
 			proceed = true
 		}
@@ -206,15 +207,21 @@ app.post('/getFilteredProducts',function(request,response){
 	if(proceed){
 		sql = sql + " WHERE "
 		
-		for(let i = 0; i<request.body.length; i++){
+		for(let i = 0; i<request.body.length-1; i++){
 			if(request.body[i].length > 1){
 				if(i > 0 && sql.length > 35){sql = sql + " or "}
 				sql = sql + request.body[i][0] + " in " + "('" + request.body[i].slice(1,request.body[i].length).join("','") + "')"
 			}
 		}
 	}
+	if(!proceed){
+		sql = sql + " WHERE price BETWEEN " + request.body[request.body.length-1][0] + " AND " + request.body[request.body.length-1][1]
+	}
+	else{
+		sql = sql + " AND price BETWEEN " + request.body[request.body.length-1][0] + " AND " + request.body[request.body.length-1][1]
+	}
 	
-	
+	console.log(sql)
 	connection.query(sql, function(err,res){
 		if(err){throw err}
 		return response.send(res)
@@ -299,6 +306,43 @@ app.get('/getAccountInfo',function(request,response){
 	connection.query('SELECT * FROM accounts WHERE username = ?',[request.session.username],function(err,res){
 		if(err)throw err;
 		return response.send(res);
+	})
+})
+
+app.post('/changeaccountinfo',function(request,response){
+	if(request.body['newusername']){
+		connection.query('UPDATE accounts SET username = ? WHERE username = ?',[request.body['newusername'].toString(),request.session.username])
+		console.log('username changed from '+ request.session.username + " to " + request.body['newusername'].toString())
+		request.session.username = request.body['newusername']
+		response.end()		
+	}
+	if(request.body['newpassword']){
+		connection.query('UPDATE accounts SET password = ? WHERE username = ?',[request.body['newpassword'].toString(),request.session.username])
+		console.log('password updated')
+		response.end()
+	}
+	if(request.body['newphone']){
+		connection.query('UPDATE accounts SET phone = ? WHERE username = ?',[request.body['newphone'].toString(),request.session.username])
+		console.log("phone changed")
+		response.end()
+	}
+	if(request.body['address'] && request.body['city'] && request.body['state'] && request.body['zip']){
+		connection.query('UPDATE accounts SET address=?,city=?,state=?,zip=? WHERE username = ?',[request.body['address'].toString(),request.body['city'].toString(),request.body['state'].toString(),request.body['zip'].toString(),request.session.username])
+		console.log("address changed")
+		response.end()
+	}
+	return
+})
+
+app.get('/getorderhistory',function(request,response){
+	connection.query('SELECT customer_id FROM accounts WHERE username = ?',[request.session.username],function(err,res){
+		let cust_id = res[0]['customer_id']
+		connection.query('SELECT order_id, product_id, product_name, product_type, price, manufacturer, product_description, order_date FROM orders NATURAL JOIN orderdetails NATURAL JOIN products WHERE customer_id = ?',[cust_id],function(err,res){
+			if(err)throw err;
+			console.log(res)
+			response.send(res)
+		})
+		return 
 	})
 })
 

@@ -40,5 +40,37 @@ nav li{
 }
 .right-content{
     float:right;
-    width: 70%;
+    width: 80%;
+}
+.product_card{
+    margin: 10px;
+    padding: 10px;
+    height: 100px;
+    width: 90%;
+    display: flex;
+    margin: 5px;
+    background: rgb(151, 191, 226);
+    box-shadow: 2px 2px 2px;
+    text-align: center;
+    transition: ease .25s;
+    position: relative;
+    border-radius: 3px;
+}
+.product_card:hover{
+    transition: ease-out .5s;
+    box-shadow: 2px 2px 3px 3px;
+}
+.product_card img{
+    height: 100px;
+    position: relative;
+    left: 0;
+}
+.product_card p{
+    margin: 10px;
+    text-align: left;
+}
+.orderInfo{
+    padding: 15px;
+    position: absolute;
+    right: 0;
 }

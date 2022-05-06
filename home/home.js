@@ -109,8 +109,11 @@ function addItemToCart(data){
 function filter(){
 	let type_list = ['product_type',]
 	let manuf_list = ['manufacturer',]
+	let price_list = [0,9999]
 	let typeCheckBoxes = document.getElementsByName('product_type')
 	let manufacturerCheckBoxes = document.getElementsByName('manufacturer')
+	let price1 = document.getElementById('price1').value
+	let price2 = document.getElementById('price2').value
 	for(let i = 0; i < typeCheckBoxes.length; i++){
 		if(typeCheckBoxes[i].checked){
 			type_list.push(typeCheckBoxes[i].value)
@@ -121,9 +124,16 @@ function filter(){
 			manuf_list.push(manufacturerCheckBoxes[i].value)
 		}
 	}
+	if(price1){
+		price_list[0] = price1
+	}
+	if(price2)[
+		price_list[1] = price2
+	]
 	var filters = []
 	filters.push(type_list)
 	filters.push(manuf_list)
+	filters.push(price_list)
 	console.log(filters)
 	getFilterdProducts(filters)
 };

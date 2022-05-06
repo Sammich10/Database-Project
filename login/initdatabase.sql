@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS products(
 
 CREATE TABLE IF NOT EXISTS orders (
 	order_id INTEGER NOT NULL AUTO_INCREMENT,
-    tracking_number INTEGER,
+    tracking_number varchar(255),
     order_date varchar(16),
     customer_id int not null,
     address varchar(255) not null,
@@ -48,10 +48,11 @@ CREATE TABLE IF NOT EXISTS orders (
 );
 
 CREATE TABLE IF NOT EXISTS orderdetails(
+	rowid integer not null auto_increment,
 	order_id INTEGER NOT NULL,
     product_id INTEGER NOT NULL,
     quantity INTEGER NOT NULL,
-    primary key(order_id),
+    primary key(rowid),
     foreign key(product_id) references products(product_id)
 );
 
@@ -67,7 +68,7 @@ CREATE TABLE IF NOT EXISTS `contracts` (
 CREATE TABLE IF NOT EXISTS payments (
 	customer_id int NOT NULL,
     nameoncard varchar(255) not null,
-	card_number int NOT NULL,
+	card_number varchar(511) NOT NULL,
     expr_month varchar(6) NOT NULL,
     expr_year varchar(6) not null,
     cvv	int NOT NULL,
@@ -85,8 +86,6 @@ CREATE TABLE stores (
 CREATE TABLE warehouses(
     warehouse_id INT NOT NULL AUTO_INCREMENT,
     phone varchar(255),
-    addr_line1 varchar(255),
-    addr_line2 varchar(255),
     address varchar(255),
     city varchar(255),
     state varchar(255),
@@ -95,18 +94,20 @@ CREATE TABLE warehouses(
 );
 
 CREATE TABLE storeinventory(
+    rowid int not null AUTO_INCREMENT,
 	store_id INT NOT NULL,
     product_id VARCHAR(255),
     quantity VARCHAR(255),
-    primary key(store_id),
+    primary key(rowid),
     foreign key(store_id) references stores(store_id)
 );
 
 CREATE TABLE warehouseinventory(
+    rowid int not null AUTO_INCREMENT,
     warehouse_id INT NOT NULL,
     product_id VARCHAR(255),
     quantity INTEGER,
-    primary key(warehouse_id)
+    primary key(rowid)
 );
 
 CREATE TABLE employees(
