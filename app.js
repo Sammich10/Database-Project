@@ -246,6 +246,7 @@ app.post('/createOrder',function(request,response){
 		tracking_number = 'sampletrackingnumber'
 		let date = new Date();
 		let currentdate = date.toDateString();
+		let order_id 
 		//check to see if cust_id is in payment table, if it is simply update payment info, if not then insert it 
 		connection.query('SELECT nameoncard FROM payments WHERE customer_id = ?',[customer_id],function(err,res){
 			if(err) throw err;
@@ -260,17 +261,46 @@ app.post('/createOrder',function(request,response){
 		})
 		let sql1 = 'INSERT INTO orders (tracking_number, order_date, customer_id, address, city, state, zipcode, status) VALUES (?,?,?,?,?,?,?,?)'
 
-		connection.query(sql1,[tracking_number,currentdate,customer_id, request.body['address'],request.body['city'],request.body['state'],request.body['zipcode'],'placed'])
-
-
-		let sql2='SELECT product_id,quantity FROM cart_items WHERE cart_id = ?'
-		connection.query(sql2,[request.session.cartID],function(err,res){
+		connection.query(sql1,[tracking_number,currentdate,customer_id, request.body['address'],request.body['city'],request.body['state'],request.body['zipcode'],'placed'],function(err){
 			if(err) throw err;
-			console.log(res);
+			connection.query('SELECT order_id FROM orders WHERE customer_id = ?',[customer_id],function(err,res){
+				if(err) throw err;
+				console.log("Order id: " + res[res.length-1]['order_id'])
+				order_id = res[res.length-1]['order_id']
+				let sql2='SELECT product_id,quantity FROM cart_items WHERE cart_id = ?'
+				connection.query(sql2,[request.session.cartID],function(err,res){
+					if(err) throw err;
+					console.log(res);	
+					for(let i = 0; i < res.length; i++){
+						connection.query('INSERT INTO orderdetails (order_id,product_id,quantity) VALUES(?,?,?)',[order_id,res[i]['product_id'],res[i]['quantity']])
+					}		
+				})
+				
+			})
 		})
+		if(request.session.loggedin){
+			response.redirect('/account')
+		}else{
+			response.redirect('/tempOrder')
+		}
+
 	}
 })
 
+app.get('/account',function(request,response){
+	if(request.session.loggedin){
+		return response.sendFile(path.join(__dirname + '/home/account.html'));
+	}else{
+		return response.send('Must be signed in to view account')
+	}
+})
+
+app.get('/getAccountInfo',function(request,response){
+	connection.query('SELECT * FROM accounts WHERE username = ?',[request.session.username],function(err,res){
+		if(err)throw err;
+		return response.send(res);
+	})
+})
 
 
 app.listen(3000);

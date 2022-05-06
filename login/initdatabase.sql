@@ -9,8 +9,10 @@ CREATE TABLE IF NOT EXISTS `accounts` (
   `email` varchar(255) NOT NULL,
   `phone` varchar(20),
   `contract_id` int,
-  address_line1 varchar(255),
-  address_line2 varchar(255),
+  address varchar(255),
+  city varchar(255),
+  state varchar(255),
+  zip varchar(255),
   PRIMARY KEY (`customer_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
